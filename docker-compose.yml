@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo:6.0.13
+    environment:
+      - MONGO_INITDB_DATABASE=lorestanuniv3
+      
+    networks:
+      - net
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - .:/var
+    privileged: true
+
+  app:
+    build: .
+    container_name: fastapi2
+    command: uvicorn --host 0.0.0.0 --port 8000 main:app --reload
+    volumes:
+      - .:/source
+    privileged: true
+    ports:
+      - "8081:8000"
+    depends_on:
+      - mongo
+    networks:
+      - net
+    restart: always
+
+networks:
+  net:
+    driver: bridge
